@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
     // #region TRACE_FILE
     FILE *trace_file = fopen(path, "r");
-    if (path[0] == '\0')
+    if (trace_file == NULL)
     {
         fprintf(stderr, "Error opening file: %s\n", path);
         exit(1);

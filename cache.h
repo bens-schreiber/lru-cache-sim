@@ -67,12 +67,12 @@ typedef struct
     u_int8_t eviction; // 1 if the operation caused an eviction, 0 otherwise
 } cache_result_t;
 
-/// @brief Reads the given address from the cache.
-cache_result_t read_cache(cache_t cache, u_int64_t address)
+/// NOTE: Since no writing is actually done in this sim, the write_cache function is identical to the read_cache function.
+cache_result_t _read_write_cache(cache_t cache, u_int64_t address)
 {
     /*
-        address = [tag | set index | block offset]
-    */
+     address = [tag | set index | block offset]
+ */
     u_int64_t set_index = (address >> cache.b) & ((1 << cache.s) - 1);
     u_int64_t tag = address >> (cache.s + cache.b);
 
@@ -115,50 +115,12 @@ cache_result_t read_cache(cache_t cache, u_int64_t address)
     return (cache_result_t){.hit = 0, .eviction = 1};
 }
 
-/// @brief Writes the given address to the cache.
+cache_result_t read_cache(cache_t cache, u_int64_t address)
+{
+    return _read_write_cache(cache, address);
+}
+
 cache_result_t write_cache(cache_t cache, u_int64_t address)
 {
-    /*
-        address = [tag | set index | block offset]
-    */
-    u_int64_t set_index = (address >> cache.b) & ((1 << cache.s) - 1);
-    u_int64_t tag = address >> (cache.s + cache.b);
-
-    // check if tag is in set
-    cache_block_t *set = cache.data + (set_index * cache.E);
-    for (int i = 0; i < cache.E; i++)
-    {
-
-        // hit
-        if (set[i].valid && set[i].tag == tag)
-        {
-            set[i].timestamp = clock();
-            return (cache_result_t){.hit = 1, .eviction = 0};
-        }
-
-        // miss, empty block
-        if (!set[i].valid)
-        {
-            set[i].valid = 1;
-            set[i].tag = tag;
-            set[i].timestamp = clock();
-            return (cache_result_t){.hit = 0, .eviction = 0};
-        }
-    }
-
-    // evict LRU
-    int lru_index = 0;
-    clock_t lru = set[0].timestamp;
-    for (int j = 1; j < cache.E; j++)
-    {
-        if (set[j].timestamp < lru)
-        {
-            lru = set[j].timestamp;
-            lru_index = j;
-        }
-    }
-
-    set[lru_index].tag = tag;
-    set[lru_index].timestamp = clock();
-    return (cache_result_t){.hit = 0, .eviction = 1};
+    return _read_write_cache(cache, address);
 }
