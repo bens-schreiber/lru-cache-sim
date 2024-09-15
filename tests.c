@@ -79,25 +79,6 @@ void test_cache_hit()
     assert(result.hit == 1);
     free_cache(cache);
 }
-
-void test_cache_eviction()
-{
-    // Arrange
-    int s = 4, E = 2, b = 4;
-    cache_t cache = create_cache(s, E, b);
-    u_int64_t address1 = 0x12345678;
-    u_int64_t address2 = 0x12345678 + (1 << b); // Ensure same set index as address1
-    u_int64_t address3 = 0x12345678 + (2 << b); // Ensure same set index as address1 and address2
-    write_cache(cache, address1);
-    write_cache(cache, address2);
-
-    // Act
-    cache_result_t result = write_cache(cache, address3);
-
-    // Assert
-    assert(result.eviction == 1);
-    free_cache(cache);
-}
 // #endregion CACHE_TESTS
 
 // #region INTERGRATION_TESTS
@@ -127,17 +108,96 @@ void test_trace01()
     assert(stats.misses == 8);
     assert(stats.evictions == 6);
 }
+
+void test_trace02()
+{
+    // Arrange
+    int s = 4, E = 2, b = 4;
+    const char *path = "traces/trace02.dat";
+    FILE *file = fopen(path, "r");
+    assert(file != NULL);
+
+    int hit_count = 0, miss_count = 0, eviction_count = 0;
+    cache_t cache = create_cache(s, E, b);
+    cache_result_t result;
+
+    // Act
+    out_buffer debug;
+    cache_stats_t stats = simulate(cache, file, debug);
+
+    // Log
+    FILE *debug_file = fopen("traces/output/trace02out.debug.txt", "w");
+    fprintf(debug_file, "%s", debug);
+    fclose(debug_file);
+
+    // Assert
+    assert(stats.hits == 4);
+    assert(stats.misses == 5);
+    assert(stats.evictions == 2);
+}
+
+void test_trace03()
+{
+    // Arrange
+    int s = 2, E = 1, b = 4;
+    const char *path = "traces/trace03.dat";
+    FILE *file = fopen(path, "r");
+    assert(file != NULL);
+
+    int hit_count = 0, miss_count = 0, eviction_count = 0;
+    cache_t cache = create_cache(s, E, b);
+    cache_result_t result;
+
+    // Act
+    out_buffer debug;
+    cache_stats_t stats = simulate(cache, file, debug);
+
+    // Log
+    FILE *debug_file = fopen("traces/output/trace03out.debug.txt", "w");
+    fprintf(debug_file, "%s", debug);
+    fclose(debug_file);
+
+    // Assert
+    assert(stats.hits == 2);
+    assert(stats.misses == 3);
+    assert(stats.evictions == 1);
+}
+
+void test_trace04()
+{
+    // Arrange
+    int s = 5, E = 1, b = 5;
+    const char *path = "traces/trace04.dat";
+    FILE *file = fopen(path, "r");
+    assert(file != NULL);
+
+    int hit_count = 0, miss_count = 0, eviction_count = 0;
+    cache_t cache = create_cache(s, E, b);
+    cache_result_t result;
+
+    // Act
+    cache_stats_t stats = simulate(cache, file, NULL);
+
+    // Assert
+    assert(stats.hits == 265189);
+    assert(stats.misses == 21775);
+    assert(stats.evictions == 21743);
+}
 // #endregion INTERGRATION_TESTS
 
 int main(int argc, char const *argv[])
 {
-    // test_iterator();
-    // test_create_cache();
-    // test_cache_miss();
-    // test_cache_hit();
-    // test_cache_eviction();
+    // unit
+    test_iterator();
+    test_create_cache();
+    test_cache_miss();
+    test_cache_hit();
 
+    // integration
     test_trace01();
+    test_trace02();
+    test_trace03();
+    test_trace04();
 
     return 0;
 }

@@ -75,14 +75,20 @@ cache_result_t read_cache(cache_t cache, u_int64_t address)
     cache_block_t *set = cache.data + (set_index * cache.E);
     for (int i = 0; i < cache.E; i++)
     {
+
+        // hit
         if (set[i].valid && set[i].tag == tag)
         {
             set[i].timestamp = clock();
             return (cache_result_t){.hit = 1, .eviction = 0};
         }
 
+        // miss, empty block
         if (!set[i].valid)
         {
+            set[i].valid = 1;
+            set[i].tag = tag;
+            set[i].timestamp = clock();
             return (cache_result_t){.hit = 0, .eviction = 0};
         }
     }
@@ -124,7 +130,7 @@ cache_result_t write_cache(cache_t cache, u_int64_t address)
             return (cache_result_t){.hit = 1, .eviction = 0};
         }
 
-        // miss
+        // miss, empty block
         if (!set[i].valid)
         {
             set[i].valid = 1;
