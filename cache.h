@@ -7,13 +7,15 @@
 
 #define cache_size(s, E, b) (s * E * b)
 
+/// @brief A block of memory in the cache.
 typedef struct cache_block_t
 {
     u_int8_t valid; // 1 if the block is valid, 0 otherwise
     u_int64_t tag;
-    clock_t timestamp;
+    clock_t timestamp; // LRU timestamp
 } cache_block_t;
 
+/// @brief A cache with a set-associative mapping given by the s E b dimensions
 typedef struct
 {
     int S; // number of sets
@@ -27,6 +29,7 @@ typedef struct
     cache_block_t *data;
 } cache_t;
 
+/// @brief Creates a cache with the given s, E, and b dimensions.
 cache_t create_cache(int s, int E, int b)
 {
 
@@ -57,12 +60,14 @@ void free_cache(cache_t cache)
     free(cache.data);
 }
 
+/// @brief The result of a cache read or write.
 typedef struct
 {
-    u_int8_t hit;
-    u_int8_t eviction;
+    u_int8_t hit;      // 1 if the operation was a hit, 0 otherwise
+    u_int8_t eviction; // 1 if the operation caused an eviction, 0 otherwise
 } cache_result_t;
 
+/// @brief Reads the given address from the cache.
 cache_result_t read_cache(cache_t cache, u_int64_t address)
 {
     /*
@@ -110,6 +115,7 @@ cache_result_t read_cache(cache_t cache, u_int64_t address)
     return (cache_result_t){.hit = 0, .eviction = 1};
 }
 
+/// @brief Writes the given address to the cache.
 cache_result_t write_cache(cache_t cache, u_int64_t address)
 {
     /*

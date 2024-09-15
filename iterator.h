@@ -19,6 +19,7 @@ typedef struct
     u_int64_t address;
 } trace_line_t;
 
+/// @brief Reads a valgrind trace line from the given file.
 trace_line_t yield_trace_line(FILE *file)
 {
     if (feof(file))

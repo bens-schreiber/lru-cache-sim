@@ -7,9 +7,10 @@
 #include <assert.h>
 #include "cachesim.h"
 
+void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *traceFile);
+void check_argument(int condition, const char *argument);
 void print_summary(int hits, int misses, int evictions);
 void print_usage(char *argv[]);
-void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *traceFile);
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +18,11 @@ int main(int argc, char *argv[])
     int s = 0, E = 0, b = 0;
     char path[100] = "";
     gather_input_args(argc, argv, &s, &E, &b, path);
-    assert(s > 0 && E > 0 && b > 0 && path[0] != '\0');
+
+    check_argument(s == 0, "s");
+    check_argument(E == 0, "E");
+    check_argument(b == 0, "b");
+    check_argument(path[0] == '\0', "t");
     // #endregion GATHER_INPUT_ARGS
 
     // #region TRACE_FILE
@@ -38,6 +43,15 @@ int main(int argc, char *argv[])
     free_cache(cache);
     fclose(trace_file);
     return 0;
+}
+
+void check_argument(int condition, const char *argument)
+{
+    if (condition)
+    {
+        fprintf(stderr, "Missing required argument: %s\n", argument);
+        exit(1);
+    }
 }
 
 void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *traceFile)

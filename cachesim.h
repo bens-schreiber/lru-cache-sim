@@ -11,6 +11,11 @@ typedef struct
     int evictions;
 } cache_stats_t;
 
+/// @brief Runs a cache simulation using the given cache and trace file.
+/// @param cache the cache to simulate
+/// @param file the valgrind trace file to read from
+/// @param debug output buffer to write debug information to
+/// @return hits, misses, and evictions on the cache
 cache_stats_t simulate(cache_t cache, FILE *file, out_buffer debug)
 {
     cache_stats_t stats = {0, 0, 0};
