@@ -4,26 +4,75 @@
 #include <stdio.h>
 #include <math.h>
 #include <errno.h>
-// other headers as needed
+#include <assert.h>
+#include "cachesim.h"
 
-#define ADDRESS_LENGTH 64  // 64-bit memory addressing
+void print_summary(int hits, int misses, int evictions);
+void print_usage(char *argv[]);
+void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *traceFile);
 
-// other variables as needed
-
-
-/* 
- * this function provides a standard way for your cache
- * simulator to display its final statistics (i.e., hit and miss)
- */ 
-void print_summary(int hits, int misses, int evictions)
+int main(int argc, char *argv[])
 {
-    printf("hits:%d misses:%d evictions:%d\n", hits, misses, evictions);
+    // #region GATHER_INPUT_ARGS
+    int s = 0, E = 0, b = 0;
+    char path[100] = "";
+    gather_input_args(argc, argv, &s, &E, &b, path);
+    assert(s > 0 && E > 0 && b > 0 && path[0] != '\0');
+    // #endregion GATHER_INPUT_ARGS
+
+    // #region TRACE_FILE
+    FILE *trace_file = fopen(path, "r");
+    if (path[0] == '\0')
+    {
+        fprintf(stderr, "Error opening file: %s\n", path);
+        exit(1);
+    }
+    // #endregion TRACE_FILE
+
+    // #region SIMULATE
+    cache_t cache = create_cache(s, E, b);
+    cache_stats_t stats = simulate(cache, trace_file, NULL);
+    print_summary(stats.hits, stats.misses, stats.evictions);
+    // #endregion SIMULATE
+
+    free_cache(cache);
+    fclose(trace_file);
+    return 0;
 }
 
-/*
- * print usage info
- */
-void print_usage(char* argv[])
+void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *traceFile)
+{
+    int opt;
+    while ((opt = getopt(argc, argv, "hvs:E:b:t:")) != -1)
+    {
+        switch (opt)
+        {
+        case 'h':
+            print_usage(argv);
+            break;
+        case 'v':
+            // verbose flag
+            break;
+        case 's':
+            *s = atoi(optarg);
+            break;
+        case 'E':
+            *E = atoi(optarg);
+            break;
+        case 'b':
+            *b = atoi(optarg);
+            break;
+        case 't':
+            strcpy(traceFile, optarg);
+            break;
+        default:
+            print_usage(argv);
+            break;
+        }
+    }
+}
+
+void print_usage(char *argv[])
 {
     printf("Usage: %s [-hv] -s <num> -E <num> -b <num> -t <file>\n", argv[0]);
     printf("Options:\n");
@@ -34,22 +83,12 @@ void print_usage(char* argv[])
     printf("  -b <num>   Number of block offset bits.\n");
     printf("  -t <file>  Trace file.\n");
     printf("\nExamples:\n");
-    printf("  linux>  %s -s 4 -E 1 -b 4 -t traces/trace01.dat\n", argv[0]);
-    printf("  linux>  %s -v -s 8 -E 2 -b 4 -t traces/trace01.dat\n", argv[0]);
+    printf("  %s -s 4 -E 1 -b 4 -t traces/yi.trace\n", argv[0]);
+    printf("  %s -v -s 8 -E 2 -b 4 -t traces/yi.trace\n", argv[0]);
     exit(0);
 }
 
-/*
- * starting point
- */
-int main(int argc, char* argv[])
+void print_summary(int hits, int misses, int evictions)
 {
-	// complete your simulator
-
-
-    // output cache hit and miss statistics
-    print_summary(hit_count, miss_count, eviction_count);
-    
-    // assignment done. life is good!
-    return 0;
+    printf("hits:%d misses:%d evictions:%d\n", hits, misses, evictions);
 }

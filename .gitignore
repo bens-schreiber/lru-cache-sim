@@ -1,0 +1,9 @@
+a.out
+.vscode
+tests.dSYM
+cachesim.dSYM
+iterator.h.gch
+tests
+cachesim
+cache.h.gch
+*.debug.txt
