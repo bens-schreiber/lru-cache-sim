@@ -7,7 +7,7 @@
 #include <assert.h>
 #include "cachesim.h"
 
-void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *traceFile);
+void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, int *verbose, char *traceFile);
 void check_argument(int condition, const char *argument);
 void print_summary(int hits, int misses, int evictions);
 void print_usage(char *argv[]);
@@ -15,9 +15,9 @@ void print_usage(char *argv[]);
 int main(int argc, char *argv[])
 {
     // #region GATHER_INPUT_ARGS
-    int s = 0, E = 0, b = 0;
+    int s = 0, E = 0, b = 0, verbose = 0;
     char path[100] = "";
-    gather_input_args(argc, argv, &s, &E, &b, path);
+    gather_input_args(argc, argv, &s, &E, &b, &verbose, path);
 
     check_argument(s == 0, "s");
     check_argument(E == 0, "E");
@@ -36,7 +36,21 @@ int main(int argc, char *argv[])
 
     // #region SIMULATE
     cache_t cache = create_cache(s, E, b);
-    cache_stats_t stats = simulate(cache, trace_file, NULL);
+
+    cache_stats_t stats;
+    if (verbose)
+    {
+        out_buffer *debug = malloc(sizeof(out_buffer));
+        assert(debug != NULL);
+
+        stats = simulate(cache, trace_file, NULL);
+        save_debug(*debug, sprintf("traces/output/verbose.txt", path));
+    }
+    else
+    {
+        stats = simulate(cache, trace_file, NULL);
+    }
+
     print_summary(stats.hits, stats.misses, stats.evictions);
     // #endregion SIMULATE
 
@@ -54,7 +68,7 @@ void check_argument(int condition, const char *argument)
     }
 }
 
-void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *traceFile)
+void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, int *verbose, char *traceFile)
 {
     int opt;
     while ((opt = getopt(argc, argv, "hvs:E:b:t:")) != -1)
@@ -65,7 +79,7 @@ void gather_input_args(int argc, char *argv[], int *s, int *E, int *b, char *tra
             print_usage(argv);
             break;
         case 'v':
-            // verbose flag
+            *verbose = 1;
             break;
         case 's':
             *s = atoi(optarg);

@@ -97,11 +97,7 @@ void test_trace01()
     // Act
     out_buffer debug;
     cache_stats_t stats = simulate(cache, file, debug);
-
-    // Log
-    FILE *debug_file = fopen("traces/output/trace01out.debug.txt", "w");
-    fprintf(debug_file, "%s", debug);
-    fclose(debug_file);
+    save_debug(debug, "traces/output/trace01out.debug.txt");
 
     // Assert
     assert(stats.hits == 9);
@@ -124,11 +120,7 @@ void test_trace02()
     // Act
     out_buffer debug;
     cache_stats_t stats = simulate(cache, file, debug);
-
-    // Log
-    FILE *debug_file = fopen("traces/output/trace02out.debug.txt", "w");
-    fprintf(debug_file, "%s", debug);
-    fclose(debug_file);
+    save_debug(debug, "traces/output/trace02out.debug.txt");
 
     // Assert
     assert(stats.hits == 4);
@@ -151,11 +143,7 @@ void test_trace03()
     // Act
     out_buffer debug;
     cache_stats_t stats = simulate(cache, file, debug);
-
-    // Log
-    FILE *debug_file = fopen("traces/output/trace03out.debug.txt", "w");
-    fprintf(debug_file, "%s", debug);
-    fclose(debug_file);
+    save_debug(debug, "traces/output/trace03out.debug.txt");
 
     // Assert
     assert(stats.hits == 2);
