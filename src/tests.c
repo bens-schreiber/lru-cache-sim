@@ -21,7 +21,7 @@ void _test_iterator(const char *path)
     fclose(file);
 }
 
-#define test_iterator_inputs {"traces/trace01.dat", "traces/trace02.dat", "traces/trace03.dat", "traces/trace04.dat"}
+#define test_iterator_inputs {"../traces/trace01.dat", "../traces/trace02.dat", "../traces/trace03.dat", "../traces/trace04.dat"}
 void test_iterator()
 {
     const char *in[4] = test_iterator_inputs;
@@ -86,7 +86,7 @@ void test_trace01()
 {
     // Arrange
     int s = 1, E = 1, b = 1;
-    const char *path = "traces/trace01.dat";
+    const char *path = "../traces/trace01.dat";
     FILE *file = fopen(path, "r");
     assert(file != NULL);
 
@@ -97,7 +97,7 @@ void test_trace01()
     // Act
     out_buffer debug;
     cache_stats_t stats = simulate(cache, file, debug);
-    save_debug(debug, "traces/output/trace01out.debug.txt");
+    save_debug(debug, "../traces/output/trace01out.debug.txt");
 
     // Assert
     assert(stats.hits == 9);
@@ -109,7 +109,7 @@ void test_trace02()
 {
     // Arrange
     int s = 4, E = 2, b = 4;
-    const char *path = "traces/trace02.dat";
+    const char *path = "../traces/trace02.dat";
     FILE *file = fopen(path, "r");
     assert(file != NULL);
 
@@ -120,7 +120,7 @@ void test_trace02()
     // Act
     out_buffer debug;
     cache_stats_t stats = simulate(cache, file, debug);
-    save_debug(debug, "traces/output/trace02out.debug.txt");
+    save_debug(debug, "../traces/output/trace02out.debug.txt");
 
     // Assert
     assert(stats.hits == 4);
@@ -132,7 +132,7 @@ void test_trace03()
 {
     // Arrange
     int s = 2, E = 1, b = 4;
-    const char *path = "traces/trace03.dat";
+    const char *path = "../traces/trace03.dat";
     FILE *file = fopen(path, "r");
     assert(file != NULL);
 
@@ -143,7 +143,7 @@ void test_trace03()
     // Act
     out_buffer debug;
     cache_stats_t stats = simulate(cache, file, debug);
-    save_debug(debug, "traces/output/trace03out.debug.txt");
+    save_debug(debug, "../traces/output/trace03out.debug.txt");
 
     // Assert
     assert(stats.hits == 2);
@@ -155,7 +155,7 @@ void test_trace04()
 {
     // Arrange
     int s = 5, E = 1, b = 5;
-    const char *path = "traces/trace04.dat";
+    const char *path = "../traces/trace04.dat";
     FILE *file = fopen(path, "r");
     assert(file != NULL);
 

@@ -9,3 +9,4 @@ cache.h.gch
 *.debug.txt
 cachesim.h.gch
 debug.txt
+verbose-output.txt

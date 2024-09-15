@@ -13,7 +13,7 @@ Run the program as so:
 `./cachesim  -s  1  -E  1  -b  1  -t  traces/trace01.dat`
 
 The program can take an optional `-v` flag to enable verbose output.
-Verbose output will be put into `traces/outputs/debug.txt`
+Verbose output will be put into `verbose-output.txt`
 
 ### Set up for simulation
 I began the program by dividing the `main` function into three steps:

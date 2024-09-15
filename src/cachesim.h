@@ -62,6 +62,11 @@ cache_stats_t simulate(cache_t cache, FILE *file, out_buffer debug)
 void save_debug(out_buffer debug, const char *path)
 {
     FILE *debug_file = fopen(path, "w");
+    if (debug_file == NULL)
+    {
+        fprintf(stderr, "Error opening file: %s\n", path);
+        exit(1);
+    }
     fprintf(debug_file, "%s", debug);
     fclose(debug_file);
 }

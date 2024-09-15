@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
         assert(debug != NULL);
 
         stats = simulate(cache, trace_file, *debug);
-        save_debug(*debug, "traces/output/debug.txt");
+        save_debug(*debug, "verbose-output.txt");
         free(debug);
     }
     else
