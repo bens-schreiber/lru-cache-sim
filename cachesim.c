@@ -43,8 +43,9 @@ int main(int argc, char *argv[])
         out_buffer *debug = malloc(sizeof(out_buffer));
         assert(debug != NULL);
 
-        stats = simulate(cache, trace_file, NULL);
-        save_debug(*debug, sprintf("traces/output/verbose.txt", path));
+        stats = simulate(cache, trace_file, *debug);
+        save_debug(*debug, "traces/output/debug.txt");
+        free(debug);
     }
     else
     {
