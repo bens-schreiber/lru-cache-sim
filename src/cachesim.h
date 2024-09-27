@@ -1,6 +1,10 @@
 #include "cache.h"
 #include "iterator.h"
 #include "string.h"
+#include <stdint.h>
+
+#ifndef CACHESIM_H
+#define CACHESIM_H
 
 typedef char out_buffer[0xFFFFF];
 
@@ -31,7 +35,11 @@ cache_stats_t simulate(cache_t cache, FILE *file, out_buffer debug)
 
             if (debug != NULL)
             {
+#ifdef __APPLE__
                 debug += sprintf(debug, "%c %llx,%hhu %s %s\n", line.flag == S ? 'S' : 'L', line.address, line.size, result.hit ? "hit" : "miss", result.eviction ? "eviction" : "");
+#else
+                debug += sprintf(debug, "%c %lx,%hhu %s %s\n", line.flag == S ? 'S' : 'L', line.address, line.size, result.hit ? "hit" : "miss", result.eviction ? "eviction" : "");
+#endif
             }
         }
 
@@ -46,7 +54,11 @@ cache_stats_t simulate(cache_t cache, FILE *file, out_buffer debug)
 
             if (debug != NULL)
             {
-                debug += sprintf(debug, "M %llx,%hhu %s %s %s %s\n", line.address, line.size, result1.hit ? "hit" : "miss", result2.hit ? "hit" : "miss", result1.eviction ? "eviction" : "", result2.eviction ? "eviction" : "");
+#ifdef __APPLE__
+                debug += sprintf(debug, "M %llx,%hhu %s %s\n", line.address, line.size, result1.hit ? "hit" : "miss", result1.eviction ? "eviction" : "");
+#else
+                debug += sprintf(debug, "M %lx,%hhu %s %s\n", line.address, line.size, result1.hit ? "hit" : "miss", result1.eviction ? "eviction" : "");
+#endif
             }
         }
     }
@@ -70,3 +82,5 @@ void save_debug(out_buffer debug, const char *path)
     fprintf(debug_file, "%s", debug);
     fclose(debug_file);
 }
+
+#endif // CACHESIM_H

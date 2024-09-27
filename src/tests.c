@@ -54,7 +54,7 @@ void test_cache_miss()
     // Arrange
     int s = 4, E = 1, b = 4;
     cache_t cache = create_cache(s, E, b);
-    u_int64_t address = 0x12345678;
+    int64_t address = 0x12345678;
 
     // Act
     cache_result_t result = write_cache(cache, address);
@@ -69,7 +69,7 @@ void test_cache_hit()
     // Arrange
     int s = 4, E = 1, b = 4;
     cache_t cache = create_cache(s, E, b);
-    u_int64_t address = 0x12345678;
+    int64_t address = 0x12345678;
     write_cache(cache, address);
 
     // Act

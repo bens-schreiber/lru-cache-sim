@@ -1,7 +1,11 @@
-#include <stdlib.h>
 #include <assert.h>
 #include <math.h>
 #include <time.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#ifndef CACHE_H
+#define CACHE_H
 
 #define ADDRESS_LENGTH 64 // 64-bit memory addressing
 
@@ -10,8 +14,8 @@
 /// @brief A block of memory in the cache.
 typedef struct cache_block_t
 {
-    u_int8_t valid; // 1 if the block is valid, 0 otherwise
-    u_int64_t tag;
+    int8_t valid; // 1 if the block is valid, 0 otherwise
+    int64_t tag;
     clock_t timestamp; // LRU timestamp
 } cache_block_t;
 
@@ -63,18 +67,18 @@ void free_cache(cache_t cache)
 /// @brief The result of a cache read or write.
 typedef struct
 {
-    u_int8_t hit;      // 1 if the operation was a hit, 0 otherwise
-    u_int8_t eviction; // 1 if the operation caused an eviction, 0 otherwise
+    int8_t hit;      // 1 if the operation was a hit, 0 otherwise
+    int8_t eviction; // 1 if the operation caused an eviction, 0 otherwise
 } cache_result_t;
 
 /// NOTE: Since no writing is actually done in this sim, the write_cache function is identical to the read_cache function.
-cache_result_t _read_write_cache(cache_t cache, u_int64_t address)
+cache_result_t _read_write_cache(cache_t cache, int64_t address)
 {
     /*
-     address = [tag | set index | block offset]
- */
-    u_int64_t set_index = (address >> cache.b) & ((1 << cache.s) - 1);
-    u_int64_t tag = address >> (cache.s + cache.b);
+        address = [tag | set index | block offset]
+    */
+    int64_t set_index = (address >> cache.b) & ((1 << cache.s) - 1);
+    int64_t tag = address >> (cache.s + cache.b);
 
     // check if tag is in set
     cache_block_t *set = cache.data + (set_index * cache.E);
@@ -115,12 +119,14 @@ cache_result_t _read_write_cache(cache_t cache, u_int64_t address)
     return (cache_result_t){.hit = 0, .eviction = 1};
 }
 
-cache_result_t read_cache(cache_t cache, u_int64_t address)
+cache_result_t read_cache(cache_t cache, int64_t address)
 {
     return _read_write_cache(cache, address);
 }
 
-cache_result_t write_cache(cache_t cache, u_int64_t address)
+cache_result_t write_cache(cache_t cache, int64_t address)
 {
     return _read_write_cache(cache, address);
 }
+
+#endif // CACHE_H

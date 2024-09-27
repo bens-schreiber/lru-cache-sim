@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdint.h>
+
+#ifndef ITERATOR_H
+#define ITERATOR_H
 
 /// @brief Valgrind trace line operation flags.
 typedef enum
@@ -16,8 +20,8 @@ typedef enum
 typedef struct
 {
     v_opt_flag flag;
-    u_int64_t address;
-    u_int8_t size; // unused other than output
+    int64_t address;
+    int8_t size; // unused other than output
 } trace_line_t;
 
 /// @brief Reads a valgrind trace line from the given file.
@@ -30,7 +34,13 @@ trace_line_t yield_trace_line(FILE *file)
 
     trace_line_t line = {.flag = U, .address = 0};
     char flag;
+
+#ifdef __APPLE__
     fscanf(file, " %c %llx,%hhu", &flag, &line.address, &line.size);
+#else
+    fscanf(file, " %c %lx,%hhu", &flag, &line.address, &line.size);
+#endif
+
     switch (flag)
     {
     case 'I':
@@ -48,3 +58,5 @@ trace_line_t yield_trace_line(FILE *file)
     }
     return line;
 }
+
+#endif // ITERATOR_H
