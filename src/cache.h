@@ -9,7 +9,7 @@
 
 #define ADDRESS_LENGTH 64 // 64-bit memory addressing
 
-#define cache_size(s, E, b) (s * E * b)
+#define cache_size(S, E, B) (S * E * B)
 
 /// @brief A block of memory in the cache.
 typedef struct cache_block_t
